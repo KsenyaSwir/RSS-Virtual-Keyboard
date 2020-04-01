@@ -74,20 +74,21 @@ const Layout = [
       ['ControlRight', 'Ctrl', 'Ctrl', 'Ctrl', 'Ctrl'],
     ],
   ];
-  
-  const wrapper = document.createElement('div');
-  const textarea = document.createElement('textarea');
-  const keyboard = document.createElement('div');
+
+  const wrapper = document.createElement('div'); //задаёт элемент с заданным тегом
+  const textArea = document.createElement('textarea');
+  const keyBoard = document.createElement('div');
   let lang = 'rus';
   let capslock = false;
-  
-  wrapper.className = 'wrapper';
-  textarea.id = 'result';
-  keyboard.className = 'keyboard';
-  
-  wrapper.append(textarea);
-  wrapper.append(keyboard);
-  
+
+
+  wrapper.className = 'wrapper';//задаёт имя класса
+  textArea.id = 'textArea';
+  keyBoard.className = 'keyBoard';
+
+  wrapper.append(textArea);
+  wrapper.append(keyBoard);
+
   for (let i = 0; i < Layout.length; i ++) {
     const row = document.createElement('div');
     row.classList.add('row');
@@ -95,6 +96,7 @@ const Layout = [
       const key = document.createElement('div');
       key.classList.add('key');
       key.classList.add(Layout[i][j][0]);
+      
       key.insertAdjacentHTML('afterBegin',
         `<div class='rus'>
           <span class='caseDown '>${Layout[i][j][1]}</span>
@@ -106,66 +108,53 @@ const Layout = [
         </div>`);
       row.appendChild(key);
     }
-    keyboard.appendChild(row);
+    keyBoard.appendChild(row);
   }
-  
-  function throttle(func, milliseconds) {
-    var lastCall = 0;
-    return function () {
-        var now = Date.now();
-        if (lastCall + milliseconds < now) {
-            lastCall = now;
-            return func.apply(this, arguments);
-        }
-    };
-  }
-  
-  const addActive = (elem) => {
+
+  function addActive(elem){
     elem.classList.add('active');
   };
   
-  const removeActive = (elem) => {
+  function removeActive(elem){
     elem.classList.remove('active');
   };
-  /*
   const changeCase = () => {
-    const langElem = keyboard.querySelectorAll(`div > .${lang}`);
-    for (let i = 0; i < langElem.length; i += 1) {
+    const langElem = keyBoard.querySelectorAll(`div > .${lang}`);
+    console.log(langElem);
+    for (let i = 0; i < langElem.length; i++) {
       langElem[i].querySelectorAll('span')[0].classList.toggle('hidden');
       langElem[i].querySelectorAll('span')[1].classList.toggle('hidden');
     }
   };
-  
-  const changeLang = () => {
-    const prevLang = keyboard.querySelectorAll(`div > .${lang}`);
-    for (let i = 0; i < prevLang.length; i += 1) {
+
+  const changeLang = ()=>{
+    const prevLang = keyBoard.querySelectorAll(`div > .${lang}`);
+    for(let i = 0; i < prevLang.length; i++){
       prevLang[i].classList.toggle('hidden');
       prevLang[i].querySelectorAll('span')[0].classList.toggle('hidden');
     }
-    if (lang === 'rus') {
+    if (lang === 'rus'){
       lang = 'eng';
       localStorage.setItem('lang', lang);
-    } else {
+    }
+    else{
       lang = 'rus';
       localStorage.setItem('lang', lang);
     }
-    const nextLang = keyboard.querySelectorAll(`div > .${lang}`);
+    const nextLang = keyBoard.querySelectorAll(`div > .${lang}`);
     for (let i = 0; i < nextLang.length; i += 1) {
       nextLang[i].classList.toggle('hidden');
       nextLang[i].querySelectorAll('span')[0].classList.toggle('hidden');
     }
   };
-  
+
   if (localStorage.lang === 'eng') {
     changeLang();
   }
-  
-  textarea.addEventListener('keydown', (e) => {
-    e.preventDefault();
-  });
-  */
-  document.addEventListener('keydown', throttle((e) => {
-    const elem = keyboard.getElementsByClassName(e.code)[0];
+
+  document.addEventListener('keydown',(e) => {
+    const elem = keyBoard.getElementsByClassName(e.code)[0];
+    
     if (e.altKey && e.ctrlKey && (e.keyCode === 18 || e.keyCode === 17)) {
       addActive(elem);
       changeLang();
@@ -175,14 +164,14 @@ const Layout = [
       case 'MetaLeft':
         break;
       case 'Tab':
-        e.preventDefault();
+       
         addActive(elem);
-        textarea.value += '    ';
+        textArea.value += '    ';
         break;
       case 'Enter':
-        e.preventDefault();
+       
         addActive(elem);
-        textarea.value += '\n';
+        textArea.value += '\n';
         break;
       case 'CapsLock':
         if (capslock) {
@@ -192,99 +181,71 @@ const Layout = [
           addActive(elem);
           capslock = true;
         }
-        e.preventDefault();
+       
         changeCase();
         break;
       case 'Backspace':
-        textarea.value = textarea.value.substr(0, textarea.value.length - 1);
+        textArea.value = textArea.value.substr(0, textArea.value.length - 1);
         addActive(elem);
         break;
       case 'Delete':
-        e.preventDefault();
+       
         addActive(elem);
         break;
       case 'AltLeft':
       case 'AltRight':
-        e.preventDefault();
+       
         addActive(elem);
         break;
       case 'ControlLeft':
       case 'ControlRight':
-        e.preventDefault();
+       
         addActive(elem);
         break;
       case 'ShiftLeft':
       case 'ShiftRight':
-        e.preventDefault();
+        
         addActive(elem);
         changeCase();
         break;
       default:
         addActive(elem);
-        textarea.value += elem.querySelectorAll(':not(.hidden)')[1].textContent;
-        break;
-    }
-  }, 10));
-  
-  document.addEventListener('keyup', (e) => {
-    const elem = keyboard.getElementsByClassName(e.code)[0];
-    switch (e.code) {
-      case 'ShiftLeft':
-      case 'ShiftRight':
-        e.preventDefault();
-        removeActive(elem);
-        changeCase();
-        break;
-      case 'CapsLock':
-        break;
-      default:
-        removeActive(elem);
+      
+        textArea.value += elem.querySelectorAll(':not(.hidden)')[1].textContent;
         break;
     }
   });
-  /*
-  keyboard.addEventListener('mousedown', (e) => {
-    if (e.target.tagName === 'SPAN') {
+
+    keyBoard.addEventListener('mousedown', (e)=>{
+      
       const elem = e.target.closest('.key');
-      switch (elem.classList[1]) {
-        case 'Tab':
-          e.preventDefault();
-          addActive(elem);
-          textarea.value += '    ';
-          break;
+      switch(elem.classList[1]){
+       case 'Tab':
+         addActive(elem);
+         textArea.value+=' ';
+         break;
         case 'Enter':
-          e.preventDefault();
           addActive(elem);
-          textarea.value += '\n';
+          textArea.value+='\n';
+          break;
+        case 'Delete':
+          addActive(elem);
           break;
         case 'Backspace':
-          textarea.value = textarea.value.substr(0, textarea.value.length - 1);
           addActive(elem);
+          textArea.value = textArea.value.substr(0, textArea.value.length - 1);
           break;
         case 'CapsLock':
-          e.preventDefault();
-          if (capslock) {
-            removeActive(e.target.closest('.key'));
+          addActive(elem);
+          if(capslock){
+            removeActive(elem);
             capslock = false;
-          } else {
-            addActive(e.target.closest('.key'));
+          }
+          else{
+            addActive(elem);
             capslock = true;
           }
           changeCase();
-          break;
-        case 'Delete':
-          e.preventDefault();
-          addActive(elem);
-          break;
-        case 'AltLeft':
-        case 'AltRight':
-          e.preventDefault();
-          addActive(elem);
-          break;
-        case 'ControlLeft':
-        case 'ControlRight':
-          e.preventDefault();
-          addActive(elem);
           break;
         case 'ShiftLeft':
         case 'ShiftRight':
@@ -292,45 +253,42 @@ const Layout = [
           addActive(elem);
           changeCase();
           break;
+        case 'ControlLeft':
+        case 'ControlRight':
+          addActive(elem);
+          break;  
         default:
           addActive(elem);
-          textarea.value += elem.querySelectorAll(':not(.hidden)')[1].textContent;
+        
+          textArea.value += elem.querySelectorAll(':not(.hidden)')[1].textContent;
           break;
       }
-    } else {
-      e.preventDefault();
-    }
+    });
+
+    document.addEventListener('mouseup', (e)=>{
+     
+      const elem = e.target.closest('.key');
+      switch (elem.classList[1]) {
+        case 'ShiftLeft':
+        case 'ShiftRight':
+          removeActive(elem);
+          changeCase();
+          break;
+        case 'CapsLock':
+          if (capslock !== true) {
+            removeActive(e.target.closest('.key'));
+          } else {
+            addActive(e.target.closest('.key'));
+          }
+          break;
+        default:
+          removeActive(elem);
+          break;
+      }
+    });
+
+  document.addEventListener('keyup', (e) => {
+    const elem = keyBoard.getElementsByClassName(e.code)[0];
+    removeActive(elem);
   });
-  
-  keyboard.addEventListener('mouseup', (e) => {
-    const elem = e.target.closest('.key');
-    switch (elem.classList[1]) {
-      case 'ShiftLeft':
-      case 'ShiftRight':
-        e.preventDefault();
-        removeActive(elem);
-        changeCase();
-        break;
-      case 'CapsLock':
-        e.preventDefault();
-        if (capslock !== true) {
-          removeActive(e.target.closest('.key'));
-        } else {
-          addActive(e.target.closest('.key'));
-        }
-        break;
-      default:
-        removeActive(elem);
-        break;
-    }
-  });
-  
-  keyboard.addEventListener('contextmenu', (e) => {
-    e.preventDefault();
-  });
-  
-  keyboard.addEventListener('dblclick', (e) => {
-    e.preventDefault();
-  });
-  */
   document.body.append(wrapper);
