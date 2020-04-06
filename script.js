@@ -115,6 +115,17 @@ const Layout = [
     elem.classList.add('active');
   };
   
+  function asincron(func, milliseconds) {
+    var lastCall = 0;
+    return function () {
+        var now = Date.now();
+        if (lastCall + milliseconds < now) {
+            lastCall = now;
+            return func.apply(this, arguments);
+        }
+    };
+  }
+
   function removeActive(elem){
     elem.classList.remove('active');
   };
@@ -151,8 +162,8 @@ const Layout = [
   if (localStorage.lang === 'eng') {
     changeLang();
   }
-
-  document.addEventListener('keydown',(e) => {
+ 
+  document.addEventListener('keydown', asincron((e) => {
     const elem = keyBoard.getElementsByClassName(e.code)[0];
     
     if (e.altKey && e.ctrlKey && (e.keyCode === 18 || e.keyCode === 17)) {
@@ -214,7 +225,7 @@ const Layout = [
         textArea.value += elem.querySelectorAll(':not(.hidden)')[1].textContent;
         break;
     }
-  });
+  }, 10));
 
     keyBoard.addEventListener('mousedown', (e)=>{
       
